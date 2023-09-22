@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Squashin gBeetles</title>  
+  <script>
+    window.onload = function(){
+        FetchScarabInfo();        
+    };   
+
+    function FetchScarabInfo() {
+        fetch("https://corsproxy.io/?https://poe.ninja/api/data/itemoverview?league=Ancestor&type=Scarab",
+        {
+            headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+            method: "GET",
+            dataType: "JSON",            
+        })
+        .then(response => response.json())
+        .then(data => {            
+            MakeTheUI(data.lines);
+        });
+    }
+
+    function MakeTheUI(obj){
+        obj.forEach(function (x) {
+            let scarabType = GetScarabType(x.name)
+            let row = GetRow(scarabType)
+            if (!row){
+                CreateRow(scarabType);
+                row = GetRow(scarabType);
+            }
+            
+            row.innerHTML += "<div data-chaos='" + x.chaosValue + "' class='float-left subItem' data-tier='" + GetTierOrder(x.name) + "'><img class='float-left' src='" + x.icon  + "'><div class='float-left'><div>" + x.name + " - " + x.chaosValue + "c</div><div class='calcBox'></div></div><div class='clear-float'><div>"
+        });
+
+        OrderRowItems();
+        AppendClears();
+        CalculateTradeUps();
+    }
+
+    function CalculateTradeUps(){
+        let rows = document.querySelectorAll(".mainRow");
+        rows.forEach(function(x){
+            let subItems = x.querySelectorAll(".subItem");
+            subItems.forEach(function(y){                
+                if (y.getAttribute("data-tier") == 1){
+                    CalulateNineTimesTradeUp(x, y);
+                    CalculateThreeTimesTradeUp(x, y);
+                }
+
+                if (y.getAttribute("data-tier") == 2){
+                    CalculateThreeTimesTradeUp(x, y);
+                }
+            });
+        });        
+    }
+
+    function CalulateNineTimesTradeUp(row, subItem){
+        let baseCost = parseFloat(subItem.getAttribute("data-chaos"));
+        let tier = parseFloat(subItem.getAttribute("data-tier"));
+        tier = tier + 2;
+        let targetCost = parseFloat(row.querySelector("[data-tier='" + tier + "']").getAttribute("data-chaos"));
+        let className = 'NoTradeUp';
+
+        if (baseCost * 9 <= targetCost){
+            className = "GoTradeUp";
+        }
+
+        subItem.querySelector(".calcBox").innerHTML += "<span class='NineTradePad " + className + "'>9x</span>"
+    }
+
+    function CalculateThreeTimesTradeUp(row, subItem){
+        let baseCost = parseFloat(subItem.getAttribute("data-chaos"));
+        let tier = parseFloat(subItem.getAttribute("data-tier"));
+        tier = tier + 1;
+        let targetCost = parseFloat(row.querySelector("[data-tier='" + tier + "']").getAttribute("data-chaos"));
+        let className = 'NoTradeUp';
+
+        if (baseCost * 3 <= targetCost){
+            className = "GoTradeUp";
+        }
+
+        subItem.querySelector(".calcBox").innerHTML += "<span class='" + className + "'>3x</span>"
+    }
+
+    function AppendClears(){
+        let rows = document.querySelectorAll(".mainRow");
+        rows.forEach(function(x){
+            x.innerHTML += "<div class='clear-float'></div>"
+        })
+    }
+
+    function OrderRowItems(){
+        let rows = document.querySelectorAll(".mainRow");
+        rows.forEach(function (x) {
+            let rowItems = x.querySelectorAll('div[data-tier]');
+            let elementsArray = Array.from(rowItems);
+
+            elementsArray.sort((a, b) => {
+                const numA = parseInt(a.getAttribute('data-tier'));
+                const numB = parseInt(b.getAttribute('data-tier'));
+                return numA - numB;
+            });
+
+            elementsArray.forEach(element => {
+                element.remove();
+            });
+
+            elementsArray.forEach(element => {
+                x.appendChild(element);
+            });
+        });
+    }
+
+    function GetTierOrder(fullName){
+        let words = fullName.split(' ');        
+        let scarabTier = words[0];
+
+        switch(scarabTier){
+            case "Winged":
+                return 4;
+            case "Gilded":
+                return 3;
+            case "Polished":
+                return 2;
+            case "Rusted":
+                return 1;
+        }
+    }
+
+    function GetScarabType(fullName) {
+        let words = fullName.split(' ');        
+        let scarabType = words[1];
+        return scarabType;
+    }
+
+    function GetRow(rowName){
+        return document.querySelector("[data-rowname='" + rowName + "Row']");
+    }
+
+    function CreateRow(rowName){
+        document.querySelector("body").innerHTML += "<div class='mainRow' data-rowName='" + rowName + "Row'></div>"
+    }
+  </script>
+  <style>
+    .float-left{
+        float:left;
+    }
+
+    .clear-float {
+        clear: both;
+    }
+
+    .subItem{
+        width:300px;
+        padding-bottom:5px;
+    }
+
+    .NoTradeUp{
+        color: red;
+    }
+
+    .GoTradeUp{
+        color: green;
+    }
+
+    .NineTradePad{
+        display: inline-block;
+        padding-right: 10px;;
+    }
+  </style>
+</head>
+<body>        
+    
+</body>
+</html>
