@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <title>Squashin gBeetles</title>  
+  <title>Squashing Beetles</title>  
   <script>
     window.onload = function(){
         FetchScarabInfo();        
@@ -30,7 +30,15 @@
                 row = GetRow(scarabType);
             }
             
-            row.innerHTML += "<div data-chaos='" + x.chaosValue + "' class='float-left subItem' data-tier='" + GetTierOrder(x.name) + "'><img class='float-left' src='" + x.icon  + "'><div class='float-left'><div>" + x.name + " - " + x.chaosValue + "c</div><div class='calcBox'></div></div><div class='clear-float'><div>"
+            row.innerHTML += 
+            "<div data-chaos='" + x.chaosValue + "' class='float-left subItem' data-tier='" + GetTierOrder(x.name) + "'>" +
+                "<img class='float-left' src='" + x.icon  + "'>" + 
+                "<div class='float-left'>" + 
+                    "<div>" + x.name + " - " + x.chaosValue + "c</div>" +
+                    "<div class='calcBox'></div>" +
+                "</div>" +
+                "<div class='clear-float'></div>" +
+            "</div>"
         });
 
         OrderRowItems();
