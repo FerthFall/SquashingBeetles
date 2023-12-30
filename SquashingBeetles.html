@@ -44,6 +44,7 @@
         OrderRowItems();
         AppendClears();
         CalculateTradeUps();
+        SortRows();
     }
 
     function CalculateTradeUps(){
@@ -147,7 +148,50 @@
     }
 
     function CreateRow(rowName){
-        document.querySelector("body").innerHTML += "<div class='mainRow' data-rowName='" + rowName + "Row'></div>"
+        document.querySelector("#beetleGrid").innerHTML += "<div class='mainRow' data-rowName='" + rowName + "Row'></div>"
+    }
+
+    function ToggleSorts(elem, containerID){
+        let checks = document.querySelectorAll("#" + containerID +" input");
+        checks.forEach(function(x) {
+            if (elem != x){
+                x.checked = false;
+            }
+        })
+        SortRows();
+    }
+
+    function SortRows() {
+        let container = document.getElementById('beetleGrid');
+        let rows = Array.from(document.querySelectorAll(".mainRow"));
+
+        rows.sort((a, b) => {
+            let valueA;
+            let valueB;
+
+            if (document.getElementById("chkWinged").checked){
+                valueA = parseFloat(a.querySelector("[data-tier='4']").getAttribute("data-chaos"));
+                valueB = parseFloat(b.querySelector("[data-tier='4']").getAttribute("data-chaos"));
+            }else if (document.getElementById("chkGilded").checked){
+                valueA = parseFloat(a.querySelector("[data-tier='3']").getAttribute("data-chaos"));
+                valueB = parseFloat(b.querySelector("[data-tier='3']").getAttribute("data-chaos"));
+            }else if(document.getElementById("chkPolished").checked){
+                valueA = parseFloat(a.querySelector("[data-tier='2']").getAttribute("data-chaos"));
+                valueB = parseFloat(b.querySelector("[data-tier='2']").getAttribute("data-chaos"));
+            }else{
+                valueA = parseFloat(a.querySelector("[data-tier='1']").getAttribute("data-chaos"));
+                valueB = parseFloat(b.querySelector("[data-tier='1']").getAttribute("data-chaos"));
+            }
+
+            if (document.getElementById("chkAsc").checked){
+                return valueA - valueB;
+            }else{
+                return valueB - valueA;
+            }
+        });
+        
+        container.innerHTML = '';
+        rows.forEach(row => container.appendChild(row));
     }
   </script>
   <style>
@@ -176,9 +220,55 @@
         display: inline-block;
         padding-right: 10px;;
     }
+
+    #sortDirection {
+        padding-right: 30px;
+    }
+
+    #sortDirection label, #sortType label {
+        padding-right: 10px;
+    }
+
+    #sortType{
+        padding-bottom: 10px;
+    }
   </style>
 </head>
 <body>        
+    <div id="filterHeader">
+        <div class="float-left" id="sortDirection">
+            <label>
+                Desc
+                <input type="checkbox" value="Desc" checked="checked" id="chkDesc" onclick="ToggleSorts(this, 'sortDirection')">
+            </label>
+            <label>
+                Asc
+                <input type="checkbox" value="Asc" id="chkAsc" onclick="ToggleSorts(this, 'sortDirection')">
+            </label>
+        </div>
+        <div class="float-left" id="sortType">
+            <label>
+                Winged
+                <input type="checkbox" value="Winged" checked="checked" id="chkWinged" onclick="ToggleSorts(this, 'sortType')">
+            </label>        
+            <label>
+                Gilded
+                <input type="checkbox" value="Gilded" id="chkGilded" onclick="ToggleSorts(this, 'sortType')">
+            </label>        
+            <label>
+                Polished
+                <input type="checkbox" value="Polished" id="chkPolished" onclick="ToggleSorts(this, 'sortType')">
+            </label>        
+            <label>
+                Rusted
+                <input type="checkbox" value="Rusted" id="chkRusted" onclick="ToggleSorts(this, 'sortType')">
+            </label>
+        </div>
+        <div class="clear-float"></div>
+    </div>
+    <div id="beetleGrid">
+
+    </div>
     
 </body>
 </html>
