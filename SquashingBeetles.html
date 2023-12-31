@@ -32,7 +32,7 @@
             
             row.innerHTML += 
             "<div data-chaos='" + x.chaosValue + "' class='float-left subItem' data-tier='" + GetTierOrder(x.name) + "'>" +
-                "<img class='float-left' src='" + x.icon  + "'>" + 
+                "<img class='float-left' src='" + x.icon  + "' title='" + x.explicitModifiers[0].text + "'>" + 
                 "<div class='float-left'>" + 
                     "<div>" + x.name + " - " + x.chaosValue + "c</div>" +
                     "<div class='calcBox'></div>" +
